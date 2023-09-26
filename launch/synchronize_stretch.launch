@@ -1,8 +1,4 @@
 <launch>
     <node name="camera_throttle" pkg="synchronized_throttle" type="synchronized_throttle_node" respawn="true" respawn_delay="10" output="screen">
-    <remap from="color/image_raw" to="/camera/color/image_raw"/>
-    <remap from="depth/image_rect_raw" to="/camera/depth/image_rect_raw"/>
-    <remap from="color/camera_info" to="/camera/color/camera_info"/>
-    <remap from="depth/image_rect_raw" to="/camera/depth/camera_info"/>
     </node>
 </launch>

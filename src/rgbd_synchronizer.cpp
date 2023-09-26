@@ -54,7 +54,11 @@ void callback(const ImageConstPtr& color_image,
     std::cout << "Received message" << std::endl;
     color_pub.publish(color_image);
     depth_pub.publish(depth_image);
-    usleep(10000);
+    color_info_msg.header=color_image->header;
+    depth_info_msg.header=depth_image->header;
+    color_info_pub.publish(color_info_msg);
+    depth_info_pub.publish(depth_info_msg);
+    usleep(200000);
 }
 
 int main(int argc, char** argv)
@@ -68,8 +72,8 @@ int main(int argc, char** argv)
 
   ros::NodeHandle nh("~");
   // Subscribe to camera info topics - will retrieve single message and shutdown
-  cinfo_sub = nh.subscribe("color/camera_info", 1, color_info_callback);
-  dinfo_sub = nh.subscribe("depth/camera_info", 1, depth_info_callback);
+  cinfo_sub = nh.subscribe("/camera/color/camera_info", 1, color_info_callback);
+  dinfo_sub = nh.subscribe("/camera/depth/camera_info", 1, depth_info_callback);
 
   // Create Publishers
   image_transport::ImageTransport itC(nh);
@@ -80,8 +84,8 @@ int main(int argc, char** argv)
   depth_info_pub = nh.advertise<sensor_msgs::CameraInfo>("/camera_throttled/depth/camera_info", 1);
 
   // Create Synchronized Callback
-  message_filters::Subscriber<Image> color_image_sub(nh, "color/image_raw", 1);
-  message_filters::Subscriber<Image> depth_image_sub(nh, "depth/image_rect_raw", 1);
+  message_filters::Subscriber<Image> color_image_sub(nh, "/camera/color/image_raw", 1);
+  message_filters::Subscriber<Image> depth_image_sub(nh, "/camera/depth/image_rect_raw", 1);
   TimeSynchronizer<Image,  Image> sync(color_image_sub, depth_image_sub, 10);
   sync.registerCallback(boost::bind(&callback, _1, _2));
 
